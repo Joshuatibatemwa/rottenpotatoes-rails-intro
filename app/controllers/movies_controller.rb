@@ -11,8 +11,35 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
-  end
+    
+    sort_by=params[:sort_by]
+    @movies=Movie.all
+    @all_ratings=Movie.pluck(:rating).uniq
+    if sort_by=='title'
+      @hilite='title'
+      @movies = Movie.order(:title)
+      elsif sort_by=='release_date'
+      @movies = Movie.order(:release_date)
+     @hilite='release_date'
+    end 
+    
+    if params[:ratings]
+      session[:ratings]=params[:ratings]
+      @checked_box=session[:ratings].keys
+      elsif session[:ratings]
+      params[:ratings]=session[:ratings]
+      redirect_to movies_path(params) and return 
+     
+    else
+      @checked_box=@all_ratings
+    end
+    puts "CHECKED_BOX"
+    puts @checked_box
+   
+        
+    
+  end 
+  
 
   def new
     # default: render 'new' template
